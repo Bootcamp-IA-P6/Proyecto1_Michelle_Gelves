@@ -22,6 +22,6 @@ LANG_EN = {
 
     "choose_mode": "Choose calculation fare mode: 'distance' or 'time': ",
     "enter_distance": "Enter the distance in kilometers: ",
-    "invalid_distance": "Invalid distance. Must be a positive number. Try again",
+    "invalid_distance": "Invalid distance. Must be a positive number different from 0. Try again",
 
 }

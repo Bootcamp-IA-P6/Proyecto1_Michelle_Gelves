@@ -38,6 +38,22 @@ def calculate_distance_fare(distance):
     #print(lang["total_fare"].format(fare=fare))
     return fare
 
+#Función validador de distancia
+def get_distance(lang):
+    '''
+    Pide al ususario la distancia y maneja errores de entrada.
+    '''
+    while True:
+        try:
+            distance = float(input(lang["enter_distance"]))
+            if distance <= 0:
+                print(lang["invalid_distance"])
+                logging.error(f"Distancia introducida por el usuario no válida: {distance} km")
+                continue
+            return distance
+        except ValueError:
+            print(lang["invalid_distance"])
+
 # =========================
 # Función principal
 # =========================
@@ -77,7 +93,7 @@ def taximeter(lang, commands):
             mode = input(lang["choose_mode"]).strip().lower()
             if mode in ("distancia", "distance"):
                 try:
-                    distance = float(input(lang["enter_distance"]))
+                    distance = get_distance(lang)
                     total_fare = calculate_distance_fare(distance)
                     print(lang["total_fare"].format(fare=total_fare))
                     logging.info(f"Viaje calculado por distancia: {distance} km, Total: {total_fare} €")

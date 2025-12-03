@@ -27,7 +27,7 @@ LANG_ES = {
     #Elegir modo 
     "choose_mode": "Elige modo de Cálculo de Tarifa: 'distancia' o 'tiempo': ",
     "enter_distance": "Introduce la distancia en kilómetros: ",
-    "invalid_distance": "Distancia inválida. Debe ser un número positivo. Intenta de nuevo",
+    "invalid_distance": "Distancia inválida. Debe ser un número positivo diferente de 0. Intenta de nuevo",
     
 }
 
