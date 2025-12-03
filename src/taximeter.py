@@ -1,8 +1,26 @@
 import time
+import os
+import logging
 
-def calculate_fare(seconds_stopped, seconds_moving, lang):
+# =========================
+# Configuración de logging
+# =========================
+if not os.path.exists('logs'):
+    os.makedirs('logs')
+
+logging.basicConfig(
+    filename='logs/taximeter.log', 
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s'
+)
+
+# =========================
+# Función de tarifa
+# =========================
+
+def calculate_time_fare(seconds_stopped, seconds_moving):
     '''
-    funcion para calcular la tarifa total en euros
+    funcion para calcular la tarifa usando tiempo.
     stopped: 0.02€/s
     moving: 0.05€/s
     '''
@@ -10,19 +28,33 @@ def calculate_fare(seconds_stopped, seconds_moving, lang):
     #print(lang["total_fare"].format(fare=fare))
     return fare
 
+def calculate_distance_fare(distance):
+    '''
+    funcion para calcular la tarifa usando distancia.
+    '''
+    base_fare = 1.5       #Euros fijos al inciar el viaje
+    price_per_km = 0.25   #Euros por km
+    fare = base_fare + distance * price_per_km
+    #print(lang["total_fare"].format(fare=fare))
+    return fare
+
+# =========================
+# Función principal
+# =========================
 def taximeter(lang, commands):
     '''
     funcion para manejar y mostrar las opciones
     del taximetro usando diccionarios de idioma.
     '''
-    print(lang["welcome"])
-    print(lang["commands"])
     trip_activate = False
     start_time = 0
     stopped_time = 0
     moving_time = 0
     state = None
     state_start_time = 0
+    
+    print(lang["welcome"])
+    print(lang["commands"])
 
     while True: 
         command = input('> ').strip().lower()
@@ -31,19 +63,39 @@ def taximeter(lang, commands):
         if command == commands["start"]:
             if trip_activate:
                 print(lang["start_error"])
+                logging.error("Intento de inicio de viaje cuando ya hay un viaje en curso")
                 continue
+            
             trip_activate = True
             start_time = time.time()
             stopped_time = 0
             moving_time = 0
             state = 'stopped'
             state_start_time = time.time()
+            
+            # Elegir modo de cálculo
+            mode = input(lang["choose_mode"]).strip().lower()
+            if mode in ("distancia", "distance"):
+                try:
+                    distance = float(input(lang["enter_distance"]))
+                    total_fare = calculate_distance_fare(distance)
+                    print(lang["total_fare"].format(fare=total_fare))
+                    logging.info(f"Viaje calculado por distancia: {distance} km, Total: {total_fare} €")
+                except ValueError:
+                    print(lang["invalid_distance"])
+                    logging.error("Distancia inválida introducida por el usuario")
+                # Reiniciar variables para permitir nuevo viaje
+                trip_activate = False
+                continue
+            
             print(lang["trip_started"])
+            logging.info("Viaje iniciado (modo tiempo)")
 
-        #Parar o mover
+        #Cambio de estado
         elif command in (commands["stop"], commands["move"]):
             if not trip_activate:
                 print(lang["no_trip"])
+                logging.error("Intento de cambio de estado sin viaje en curso")
                 continue
             
             #Calcula el tiempo del estado anterior
@@ -62,11 +114,13 @@ def taximeter(lang, commands):
                 print(lang["state_changed"].format(cmd=lang["cmd_stop"], state=lang["cmd_stop"]))
             else:
                 print(lang["state_changed"].format(cmd=lang["cmd_move"], state=lang["cmd_move"]))
+            logging.info(f"Cambio de estado a {state}")
 
         #Finalizar el viaje
         elif command == commands["finish"]:
             if not trip_activate:
                 print(lang["no_trip"])
+                logging.error("Intento de finalizar viaje sin viaje activo")
                 continue
             
             duration = time.time() - state_start_time
@@ -75,15 +129,15 @@ def taximeter(lang, commands):
             else:
                 moving_time += duration
             
-            #Calcula la tarifa total
-            total_fare = calculate_fare(stopped_time, moving_time, lang)
-            
             #Mostrar resumen del viaje
             print(lang["finish_header"])
             print(lang["time_stopped"].format(t=stopped_time))
             print(lang["time_moving"].format(t=moving_time))
+            
+            #Calcula la tarifa total
+            total_fare = calculate_time_fare(stopped_time, moving_time)
             print(lang["total_fare"].format(fare=total_fare))
-                
+            logging.info(f"Viaje finalizado. Total: {total_fare:.2f} €")    
 
             #Reinicia las variables para un nuevo viaje
             trip_activate = False
@@ -94,10 +148,12 @@ def taximeter(lang, commands):
         #Salir del programa
         elif command == commands['exit']:
             print(lang["exit"])
+            logging.info("Usuario ha salido del programa")
             break
         #Comando desconocido
         else:
             print(lang["unknown"])
+            logging.warning(f"Comando desconocido introducido: {command}")
 
 if __name__ == '__main__':
     taximeter()

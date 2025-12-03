@@ -3,6 +3,7 @@ from languages.en import LANG_EN
 from taximeter import taximeter
 
 def main():
+    #Elegir Idioma
     choice = input(LANG_ES["choose_language"]).strip().lower()
     if choice == 'es':
         lang = LANG_ES
