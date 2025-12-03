@@ -1,0 +1,16 @@
+
+==============================
+Fecha: 2025-12-03 15:26:30
+Tipo de trayecto: distancia
+Distancia: 8.0 km
+Coste total: 3.5 €
+==============================
+
+==============================
+Fecha: 2025-12-03 15:27:48
+Tipo de trayecto: tiempo
+Tiempo parado: 7.04 segundos
+Tiempo en movimiento: 14.73 segundos
+Duración total: 21.76 segundos
+Coste total: 0.88 €
+==============================

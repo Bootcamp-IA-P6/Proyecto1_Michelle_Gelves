@@ -1,6 +1,8 @@
 import time
 import os
 import logging
+from history import save_history
+from datetime import datetime
 
 # =========================
 # Configuración de logging
@@ -97,9 +99,20 @@ def taximeter(lang, commands):
                     total_fare = calculate_distance_fare(distance)
                     print(lang["total_fare"].format(fare=total_fare))
                     logging.info(f"Viaje calculado por distancia: {distance} km, Total: {total_fare} €")
+                
+                    trip_info = {
+                        "fecha": datetime.now(),
+                        "tipo": "distancia",
+                        "distancia_total": round(distance, 2),
+                        "coste_total": round(total_fare, 2)
+                    }
+                    save_history(trip_info)
+                    logging.info("Trayecto por distancia guardado en historial")
+                
                 except ValueError:
                     print(lang["invalid_distance"])
                     logging.error("Distancia inválida introducida por el usuario")
+                    
                 # Reiniciar variables para permitir nuevo viaje
                 trip_activate = False
                 continue
@@ -154,6 +167,21 @@ def taximeter(lang, commands):
             total_fare = calculate_time_fare(stopped_time, moving_time)
             print(lang["total_fare"].format(fare=total_fare))
             logging.info(f"Viaje finalizado. Total: {total_fare:.2f} €")    
+
+            # ===========================
+            # CREAR TRAYECTO PARA HISTORIAL
+            # ===========================
+            trip_info = {
+                "fecha": datetime.now(),
+                "tipo": "tiempo",
+                "tiempo_parado": round(stopped_time, 2),
+                "tiempo_movimiento": round(moving_time, 2),
+                "duracion_total": round(stopped_time + moving_time, 2),
+                "coste_total": round(total_fare, 2)
+            }
+
+            save_history(trip_info)
+            logging.info("Trayecto por tiempo guardado en historial")
 
             #Reinicia las variables para un nuevo viaje
             trip_activate = False
