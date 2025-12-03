@@ -6,9 +6,7 @@ def calculate_fare(seconds_stopped, second_moving):
     stopped: 0.02€/s
     moving: 0.05€/s
     '''
-    
     fare = seconds_stopped * 0.02 + second_moving * 0.05
-
     print(f'Este es el total de tu viaje: {fare}€')
     return fare
 
