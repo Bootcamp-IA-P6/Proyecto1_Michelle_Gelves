@@ -27,3 +27,13 @@ def save_history(trip_info):
             f.write("==============================\n")
     except Exception as e:
         print(f"Error al guardar el historial: {e}")
+        
+HISTORY_FILE = os.path.join('data', 'historial.txt')
+
+def read_history():
+    """Lee todo el historial del archivo historial.txt y lo devuelve como texto."""
+    if not os.path.exists(HISTORY_FILE):
+        return "No hay historial todavía."
+    
+    with open(HISTORY_FILE, 'r', encoding='utf-8') as f:
+        return f.read()

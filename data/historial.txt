@@ -55,3 +55,12 @@ Tiempo en movimiento: 50.26 segundos
 Duración total: 60.33 segundos
 Coste total: 2.71 €
 ==============================
+
+==============================
+Fecha: 2025-12-04 13:02:50
+Tipo de trayecto: tiempo
+Tiempo parado: 2.18 segundos
+Tiempo en movimiento: 1.77 segundos
+Duración total: 3.94 segundos
+Coste total: 0.13 €
+==============================
