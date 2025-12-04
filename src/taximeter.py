@@ -3,6 +3,7 @@ import os
 import logging
 from history import save_history
 from datetime import datetime
+from config import fare_config
 
 # =========================
 # Configuración de logging
@@ -16,6 +17,9 @@ logging.basicConfig(
     format='%(asctime)s - %(levelname)s - %(message)s'
 )
 
+#Cargar la configuracion del archivo .env
+config = fare_config()
+
 # =========================
 # Función de tarifa
 # =========================
@@ -26,7 +30,7 @@ def calculate_time_fare(seconds_stopped, seconds_moving):
     stopped: 0.02€/s
     moving: 0.05€/s
     '''
-    fare = seconds_stopped * 0.02 + seconds_moving * 0.05
+    fare = (seconds_stopped * config['stopped_fare']) + (seconds_moving * config['moving_fare'])
     #print(lang["total_fare"].format(fare=fare))
     return fare
 
@@ -34,9 +38,7 @@ def calculate_distance_fare(distance):
     '''
     funcion para calcular la tarifa usando distancia.
     '''
-    base_fare = 1.5       #Euros fijos al inciar el viaje
-    price_per_km = 0.25   #Euros por km
-    fare = base_fare + distance * price_per_km
+    fare = config['base_fare'] + distance * config['price_per_km']
     #print(lang["total_fare"].format(fare=fare))
     return fare
 
