@@ -201,10 +201,10 @@ def show_history():
 # =========================
 # GUI premium compacta con scroll y fondo animado
 # =========================
-class TaximeterPremium(QWidget):
+class Taximeter(QWidget):
     def __init__(self):
         super().__init__()
-        self.setWindowTitle("Taxímetro Premium")
+        self.setWindowTitle("Taxímetro")
         self.setGeometry(100, 100, 600, 650)
         self.setStyleSheet("background-color: rgba(128, 128, 128, 0.75);")
 
@@ -271,10 +271,10 @@ class TaximeterPremium(QWidget):
 
         # Botones tiempo
         btn_layout = QHBoxLayout()
-        self.start_btn = QPushButton("Iniciar"); self.start_btn.clicked.connect(self.start_trip)
-        self.stop_btn = QPushButton("Parar"); self.stop_btn.clicked.connect(self.stop_trip)
-        self.move_btn = QPushButton("Mover"); self.move_btn.clicked.connect(self.move_trip)
-        self.finish_btn = QPushButton("Finalizar"); self.finish_btn.clicked.connect(self.finish_trip)
+        self.start_btn = QPushButton("Iniciar"); self.start_btn.clicked.connect(start_trip)
+        self.stop_btn = QPushButton("Parar"); self.stop_btn.clicked.connect(stop_trip)
+        self.move_btn = QPushButton("Mover"); self.move_btn.clicked.connect(move_trip)
+        self.finish_btn = QPushButton("Finalizar"); self.finish_btn.clicked.connect(finish_trip)
         for btn, color in zip([self.start_btn, self.stop_btn, self.move_btn, self.finish_btn],
                             ["rgba(76,175,80,200)", "rgba(244,67,54,200)", "rgba(33,150,243,200)", "rgba(255,193,7,200)"]):
             self.setup_button(btn, color); btn_layout.addWidget(btn)
@@ -296,11 +296,11 @@ class TaximeterPremium(QWidget):
                 font-size: 14pt;        /* tamaño del placeholder */
             }
         """)
-        self.distance_entry.textChanged.connect(self.update_distance_fare)
+        self.distance_entry.textChanged.connect(update_distance_fare)
         self.fare_distance_label = QLabel("Tarifa actual: 0.00 €")
         self.fare_distance_label.setStyleSheet("color:white; background-color: rgba(0,0,0,100); padding:3px; border-radius:6px; font-size:12pt")
         self.distance_btn = QPushButton("Calcular Tarifa por Distancia")
-        self.distance_btn.clicked.connect(self.start_distance_trip)
+        self.distance_btn.clicked.connect(start_distance_trip)
         self.setup_button(self.distance_btn, "rgba(156,39,176,200)")
         for w in [self.distance_entry, self.fare_distance_label, self.distance_btn]:
             layout.addWidget(w)
@@ -350,74 +350,6 @@ class TaximeterPremium(QWidget):
             self.moving_label.setText(f"Tiempo en movimiento: {current_moving:.2f} s")
             self.fare_label.setText(f"Tarifa actual: {calculate_time_fare(current_stopped, current_moving):.2f} €")
 
-    def update_distance_fare(self):
-        try:
-            distance = float(self.distance_entry.text())
-            fare = calculate_distance_fare(distance)
-            self.fare_distance_label.setText(f"Tarifa actual: {fare:.2f} €")
-        except ValueError:
-            self.fare_distance_label.setText("Tarifa actual: 0.00 €")
-
-    # =========================
-    # Funciones control del viaje
-    # =========================
-    def start_trip(self):
-        global trip_active, start_time, stopped_time, moving_time, state
-        if trip_active:
-            return
-        trip_active = True
-        start_time = time.time()
-        stopped_time = 0
-        moving_time = 0
-        state = 'stopped'
-
-    def stop_trip(self):
-        global start_time, stopped_time, moving_time, state
-        if not trip_active:
-            return
-        now = time.time()
-        if state == 'moving':
-            moving_time += now - start_time
-        else:
-            stopped_time += now - start_time
-        state = 'stopped'
-        start_time = now
-
-    def move_trip(self):
-        global start_time, stopped_time, moving_time, state
-        if not trip_active:
-            return
-        now = time.time()
-        if state == 'stopped':
-            stopped_time += now - start_time
-        else:
-            moving_time += now - start_time
-        state = 'moving'
-        start_time = now
-
-    def finish_trip(self):
-        global trip_active, start_time, stopped_time, moving_time, state
-        if not trip_active:
-            return
-        now = time.time()
-        if state == 'stopped':
-            stopped_time += now - start_time
-        else:
-            moving_time += now - start_time
-        trip_active = False
-        start_time = None
-        state = None
-
-    def start_distance_trip(self):
-        try:
-            distance = float(self.distance_entry.text())
-            if distance <= 0:
-                return
-            fare = calculate_distance_fare(distance)
-            self.fare_distance_label.setText(f"Tarifa actual: {fare:.2f} €")
-        except ValueError:
-            self.fare_distance_label.setText("Tarifa actual: 0.00 €")
-
     # =========================
     # Historial
     # =========================
@@ -440,6 +372,6 @@ class TaximeterPremium(QWidget):
 # Ejecutar app
 # =========================
 app = QApplication(sys.argv)
-gui = TaximeterPremium()
+gui = Taximeter()
 gui.show()
 sys.exit(app.exec_())
